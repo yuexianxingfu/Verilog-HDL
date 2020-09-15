@@ -1,0 +1,47 @@
+//测试模块
+
+
+`timescale 1ns/1ns//时间步长、精度
+`define clk_period 20//全局变量定义：测试时钟周期
+
+module test_tb;
+	//激励信号源和时钟信号定义
+	reg [7:0] D0,D1;
+	reg clk;
+	//信号类型定义
+	wire [7:0] S;
+	
+	//时钟信号的产生
+	initial clk=1;
+	always #(`clk_period/2) clk=~clk;
+	
+	//定义随机数0-7
+	reg[15:0] myrand;
+	
+	always@(posedge clk) myrand<={$random}%16'hFFFF;
+	//控制信号的生成
+	///*
+	initial begin
+		D0=8'b0111_1111;
+		D1=8'b0011_1111;
+		#1000 $stop;
+		end
+	//*/
+	//输入信号生成
+	always@(posedge clk)
+		begin
+			D0<=myrand[7:0];
+			D1<=myrand[15:8];
+			//S<=myrand[2]&&myrand[1];
+		end
+	
+	
+	
+	//调用顶层模块
+	test u0(
+		D0,
+		D1,
+		S);
+endmodule
+
+	
