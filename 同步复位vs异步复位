@@ -1,0 +1,52 @@
+//由于reset没有同步化，到达各个触发器的时间延迟不固定，防止毛刺导致误触发。
+
+//异步复位 example
+module data_proc1（clk,reset,serial_in,data_in);
+//接口定义
+input serial_in;串行输入
+input clk;
+input reset;//复位信号
+output date_in;
+//数据类型定义
+reg date_in;
+
+//功能定义
+always@(posedge clk or negedge reset)
+  begin
+    if(reset==1'b0)
+      date_in<=1'b0;//数据字长
+    else
+      date_in<=serial_in;
+  end
+enmodule
+
+//同步设计 example
+module data_proc2（clk,reset,serial_in,data_in);
+//接口定义
+input serial_in;串行输入
+input clk;
+input reset;//复位信号
+output date_in;
+//数据类型定义
+reg date_in;
+
+//内部数据定义
+reg reset_1d,reset_2d;
+
+//功能定义
+//同步化  双跳技术
+always@(posedge clk )
+  begin
+    reset_1d<=reset;
+    reset_1d<=reset;
+  end
+
+always@(posedge clk )
+  begin
+    if(reset_2d==1'b0)
+      date_in<=1'b0;//数据字长
+    else
+      date_in<=serial_in;
+  end
+enmodule
+
